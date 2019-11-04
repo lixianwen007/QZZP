@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1435096_4q81iuq2ms4.css">
+    <title>简历</title>
+    <style>
+        /* 清除样式 */
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* 设置wrapper的宽度并且居中 */
+        .wrapper{
+            width: 1200px;
+            margin: 0 auto;
+            border: 1px solid transparent;
+        }
+
+        /*  ============顶栏样式============ */
+
+        /* 设置顶栏的背景色，下边框 */
+        .dinglan{
+            background-color: #fafafa;
+            height: 35px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* 将城市浮动 */
+        .dinglan > .wrapper > .left{
+            float: left;
+        }
+
+        /* 设置城市字体样式 */
+        .dinglan > .wrapper > .left > ul{
+            line-height: 35px;
+        }
+
+        /* 将城市li浮动 *//* 调整城市和切换城市之间的距离 */
+        .dinglan > .wrapper > .left > ul > li{
+            float: left;
+            margin-right: 10px;
+        }
+
+        /* 调节城市字体样式 */
+        .dinglan > .wrapper > .left > ul > li:first-child{
+            font-size: 18px;
+            color: #058cfa;
+            font-weight: bold;
+        }
+
+        /* 调节城市字体样式 */
+        .dinglan > .wrapper > .left > ul > li:last-child{
+            font-size: 14px;
+            color: #9999b2;
+            font-weight: bold;
+        }
+
+
+        /* 将右侧导航浮动到右侧 */
+        .dinglan > .wrapper > .right{
+            float: right;
+        }
+
+        /* 设置字体样式 */
+        .dinglan > .wrapper > .right > ul{
+            line-height: 35px;
+            text-align: center;
+        }
+
+        /* 将一级导航浮动, 调节之间的距离 */
+        .dinglan > .wrapper > .right > ul > li{
+            float: left;
+            width: 100px;
+            position: relative;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* 设置二级导航样式 */
+        .dinglan > .wrapper > .right > ul > li > div.erji > ul{
+            position: absolute;
+            width: 100%;
+            background-color: #fff;
+            display: none;
+            color: #333;
+            z-index: 100;
+        }
+
+        /* 设置二级导航悬浮样式 */
+        .dinglan > .wrapper > .right > ul > li > div.erji > ul > li:hover{
+            color: orange;
+            background-color: #ededed;
+        }
+
+
+        /* 浮动到一级导航显示二级导航 */
+        .dinglan > .wrapper > .right > ul > li:hover > div.erji > ul{
+            display: block;
+        }
+
+        /* 设置浮动到li改变背景色 */
+        .dinglan > .wrapper > .right > ul > li:hover{
+            background-color: #fff;
+            color: orange;
+        }
+
+        .dinglan > .wrapper > .right > ul > li  a{
+            text-decoration: none;
+            color: #333;
+        }
+
+        .dinglan > .wrapper > .right > ul > li:hover  a{
+            background-color: #fff;
+            color: orange;
+        }
+
+        /* ============顶栏样式============ */
+
+        /* ============内容样式============ */
+
+        .neirong > .wrapper{
+            margin-top: 30px;
+        }
+
+        .neirong > .wrapper > .left{
+            width: 220px;
+            height: 600px;
+            float: left;
+        }
+
+        .neirong > .wrapper > .right{
+            margin-left: 240px;
+            height: 600px;
+        }
+
+        .neirong .left .top{
+            height: 200px;
+            border-bottom: 1px solid #9999b2;
+        }
+
+        .neirong .left .top .header{
+            height: 100px;
+            width: 100px;
+            margin: 10px auto;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .neirong .left .top .header > img{
+            width: 100%;
+        }
+
+        .neirong .left .top > .tel{
+            width: 140px;
+            margin:0 auto;
+            font-size: 14px;
+        }
+        .neirong .left .top > .tel > span{
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .neirong .bottom > .menu{
+            text-align: center;
+        }
+
+        .neirong .bottom > .menu > li{
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 18px;
+            line-height: 40px;
+        }
+
+        .neirong .bottom > .menu > li > ul{
+            margin-left: 25px;
+            line-height: 3em;
+            font-size: 15px;
+        }
+
+        .neirong .bottom > .menu span{
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        ul.menu > li.current{
+            border-left: 3px solid lightblue;
+            background-color: #faf9f9;
+            color: #058cfa;
+        }
+
+        /* ============内容样式============ */
+    </style>
+
+
+    <script>
+        $(function(){
+			$(".menu > .menu-item > div").click(function(){
+				// 使其他的二级栏目隐藏
+				$(this).parent().siblings().find("ul.menu-sub").collapse("hide");
+				// 使当前的二级栏目显示
+				$(this).next(".menu-sub").collapse("toggle")
+            });
+            
+            $(".bottom > .menu > li").click(function(){
+                $(".bottom > .menu > li").removeClass('current');
+                $(this).addClass('current');
+            })
+
+
+            $(".menu > .menu-item > div").click(function(){
+                var url = $(this).attr("url");
+                $("#right").load(url);
+            })
+
+            $(".menu > .menu-item > ul > li").click(function(){
+                var url = $(this).attr("url");
+                $("#right").load(url);
+            })
+
+            $(".bottom > .menu > li:first-child").trigger('click');
+
+            $(".bottom > .menu > li:first-child > div").trigger('click');
+		});
+    </script>
+
+</head>
+<body>
+    <div class="box">
+        <!-- ==============顶栏============== -->
+        <div class="dinglan">
+            <div class="wrapper">
+                <!-- 左边城市 -->
+                <div class="left">
+                    <ul>
+                        <li>北京</li>
+                        <li>[切换城市]</li>
+                    </ul>
+                </div>
+                <!-- 左边城市 -->
+
+                <!-- 右边导航栏 -->
+                <div class="right">
+                    <ul>
+                        <li>登录/注册</li>
+
+                        <li>
+                            <!-- 一级导航 -->
+                            <div class="yiji"><a  href="./pages/MyJob.html">个人中心</a></div>
+                            <!-- 二级导航 -->
+                            <div class="erji">
+                                <ul>
+                                    <li>我的收藏</li>
+                                    <li>我的求职</li>
+                                    <li>我的浏览</li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li>
+                            <!-- 一级导航 -->
+                            <div class="yiji">商家中心</div>
+                            <!-- 二级导航 -->
+                            <div class="erji">
+                                <ul>
+                                    <li>我的发布</li>
+                                    <li>企业信息</li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 右边导航栏 -->
+            </div>
+        </div>
+        <!-- ==============顶栏============== -->
+
+        <!-- ==============内容============== -->
+        <div class="neirong">
+            <div class="wrapper">
+                <div class="left shadow">
+                    <!-- 上部地区（头像、昵称） -->
+                    <div class="top">
+                        <div class="header">
+                            <img src="../images/header.png" alt="">
+                        </div>
+                        <div class="name text-center font-weight-bold">优秀的求职者</div>
+                        <div class="tel text-center font-weight-bold mt-2 text-light bg-primary"><span class="iconfont icon-telephone"></span>158****8131</div>
+                    </div>
+
+                    <div class="bottom">
+                        <ul class="menu">
+                            <li class="menu-item ">
+                                <div url = "./shoucang.html"><span class="iconfont icon-wodeshoucang"></span>我的收藏</div>
+                            </li>
+
+                            <li class="menu-item">
+                                <div><span class="iconfont icon-zhengjian"></span>我的求职</div>
+                                <ul class="menu-sub collapse">
+                                    <li url = "./jianli.html"">我的简历</li>
+                                    <li url = "./jilu.html">求职记录</li>
+                                </ul>
+                            </li>
+
+                            <li class="menu-item">
+                                <div url = "./liulan.html"><span class="iconfont icon-jilu"></span>我的浏览</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="right" class="right">
+
+                </div>
+            </div>
+        </div>
+        <!-- ==============内容============== -->
+    </div>
+</body>
+</html>

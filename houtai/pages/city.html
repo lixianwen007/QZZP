@@ -1,0 +1,266 @@
+<!-- 导入jQuery库 -->
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<!-- 导入bootstrapo.css库 -->
+	<link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<!-- 导入bootstrapo.js库 -->
+	<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- 导入iconfont图标库 -->
+	<link rel="stylesheet" href="https://at.alicdn.com/t/font_1424659_vhrtzwcq2vp.css">
+<style>
+	.city >div{
+		margin: 0 30px;
+	}
+	.tab-content{
+		background-color: #ffffff;
+	}
+	.citytitle{
+		background-color:  #F1F1F1;
+	}
+	.title1{
+		height: 50px;
+		background-color: #ffffff;
+		border-top: 5px solid blue;
+		text-align: center;
+		padding-top: 15px;
+	}
+	.cityTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.welfareTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.jobTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.table > thead{
+		background-color: #333;
+		color: #ffffff;
+	}
+	a{
+		cursor: pointer;
+	}
+	.nav a:nth-child(1),
+	.nav a:nth-child(2),
+	.nav a:nth-child(3){
+		border-top: 5px solid blue;
+	}
+</style>
+<div class="city">
+	<!-- 招聘头部标题 -->
+	<nav>
+  		<div class="nav nav-tabs" id="nav-tab" role="tablist" style="margin:0 30px;">
+    		<a class="nav-item nav-link active" id="nav-city-tab" data-toggle="tab" href="#nav-city" role="tab" aria-selected="true" sty>城市管理</a>
+    		<a class="nav-item nav-link" id="nav-welfare-tab" data-toggle="tab" href="#nav-welfare" role="tab"  aria-selected="false">福利管理</a>
+    		<a class="nav-item nav-link" id="nav-job-tab" data-toggle="tab" href="#nav-job" role="tab" aria-selected="true" sty>职位管理</a>
+  		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-city" role="tabpanel" aria-labelledby="nav-city-tab">
+			<!-- 头部查找框 -->
+			<div class="cityTop row">
+				<div class="btns col-12 text-right">
+					<button class="btn btn-warning" id="csbtn_add">添加省份</button>
+				</div>
+			</div>
+			<!-- 管理表单 -->
+			<div class="froms">
+				<table class="table table-bordered" id="csgl">
+					<thead class="table-dark">
+						<tr>
+					       <th scope="col">城市</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="nav-welfare" role="tabpanel" aria-labelledby="nav-welfare-tab">
+			<div class="welfareTop row">
+				<div class="serach col-1">
+					<form>
+						<select name="" id="serach_id" class="form-control">
+							<option value="" style="display: none;">福利id</option>
+						</select>
+					</form>
+				</div>
+				<div class="btns col-10 text-right">
+				<button class="btn btn-info " id="flbtn_hy">还原</button>
+			</div>
+			</div>
+			<!-- 福利管理表单 -->
+			<div class="froms">					
+				<table class="table table-bordered text-center" id="flgl">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" width="100px"><input type="checkbox"></th>
+					       <th scope="col">福利名称</th>
+					       <th scope="col">状态</th>
+					       <th scope="col">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="tab-pane fade show" id="nav-job" role="tabpanel" aria-labelledby="nav-job-tab">
+			<!-- 头部查找框 -->
+			<div class="jobTop row">
+				<div class="btns col-12 text-right">
+					<button class="btn btn-warning" id="zwbtn_add">添加职务</button>
+				</div>
+			</div>
+			<!-- 管理表单 -->
+			<div class="froms">
+				<table class="table table-bordered" id="zwgl">
+					<thead class="table-dark">
+						<tr>
+					       <th scope="col">职务</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	baseURL = "http://203.195.246.58:7777";
+	// 该id是点击修改按钮时获取的id，设置为全局变量
+	function initData(){
+			//加载数据城市管理表格
+			// 在每次追加数据之前，先清空table
+			$('#csgl > tbody').empty();
+			var url = "/City/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr1 = $(`<tr style="display:inline-block;">
+							<td style="border:none; width:100px;">`+item.provinceId+`-`+item.name+`<input type="hidden" value="`+item.id+`" /></td>
+					</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#csgl > tbody').append(newTr1);	
+				})
+					var newan = $(`<tr style="display:inline-block;">
+						<td style="border:none;"><a href="" id="csbg_add">添加</a></td>
+					</tr>`);
+					$('#csgl > tbody').append(newan);
+			})
+			//加载数据福利管理表格
+			// 在每次追加数据之前，先清空table
+			$('#flgl > tbody').empty();
+			var url = "/Welfare/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.status+`</td>
+					        <td>
+								<a class="iconfont icon-suo" id="csbtn_freeze"></a>
+					        </td>
+					</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#flgl > tbody').append(newTr2);
+				})
+			})
+			//加载数据职务管理表格
+			// 在每次追加数据之前，先清空table
+			$('#zwgl > tbody').empty();
+			var url = "/Jobs/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr3 = $(`<tr style="display:inline-block;">
+							<td style="border:none; width:100px;">`+item.status+`-`+item.name+`<input type="hidden" value="`+item.id+`" /></td>
+					</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#zwgl > tbody').append(newTr3);	
+				})
+					var newan = $(`<tr style="display:inline-block;">
+						<td style="border:none;"><a href="" id="csbg_add">添加</a></td>
+					</tr>`);
+					$('#zwgl > tbody').append(newan);
+			})
+	}
+	//搜索框获取福利id
+	function serachid(){
+		var url ='/Welfare/findAll';
+		$.get(baseURL+url,function(result){
+			result.data.forEach(function(item){
+				var newOption = $(`
+					<option value="`+item.id+`">`+item.id+`</option>
+				`);
+				$('#serach_id').append(newOption);
+			})
+		});
+	}	
+	$(function(){
+		initData();
+		serachid();
+		//城市管理双击删除
+		$("#csgl > tbody").on("dblclick","tr",function(){
+			var url ="/City/deleteById";
+    		// 获取到id的值
+			var id = $(this).find("input").val();
+			//与后台进行交互
+    		var data = {
+				id:id
+			}
+    		$.post(baseURL+url,data,function(result){
+    			initData();
+    		})
+		})
+		//职务管理双击删除
+		$("#zwgl > tbody").on("dblclick","tr",function(){
+			var url ="/Jobs/deleteById";
+    		// 获取到id的值
+			var id = $(this).find("input").val();
+			//与后台进行交互
+    		var data = {
+				id:id
+			}
+    		$.post(baseURL+url,data,function(result){
+    			initData();
+    		})
+		})
+		// =============根据福利id查询福利信息=================
+		$('#serach_id').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var id = $(this).val();
+			var url = "/Welfare/findById";
+			var data = {
+				id:id
+			};
+			$.get(baseURL+url,data,function(item){
+				$('#flgl > tbody').empty();
+				var newTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.data.id+`"/></td>
+							<td>`+item.data.name+`</td>
+					        <td>`+item.data.status+`</td>
+					        <td>
+								<a class="iconfont icon-suo" id="csbtn_freeze"></a>
+					        </td>
+					</tr>`);
+					$('#flgl > tbody').append(newTr2);
+			})
+		})
+		// 还原搜索
+		$('#flbtn_hy').click(function(){
+			// 点击按钮重新加载数据
+			initData();
+		});
+		//点击表格添加按钮添加城市
+		$('#csbg_add').on('click',function(){
+
+		})
+	})
+</script>
+

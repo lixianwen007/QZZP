@@ -1,0 +1,556 @@
+<!-- 导入jQuery库 -->
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+<!-- 导入bootstrapo.css库 -->
+	<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- 导入bootstrapo.js库 -->
+	<!-- <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<!-- 导入iconfont图标库 -->
+	<!-- <link rel="stylesheet" href="https://at.alicdn.com/t/font_1424659_vhrtzwcq2vp.css"> -->
+<style>
+	.business >div{
+		margin: 0 30px;
+	}
+	.businesscontent{
+		background-color: #ffffff;
+	}
+	.title1{
+		height: 50px;
+		background-color: #ffffff;
+		border-top: 5px solid blue;
+		text-align: center;
+		padding-top: 15px;
+	}
+	.businessTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.table > thead{
+		background-color: #333;
+		color: #ffffff;
+	}
+	a{
+		cursor: pointer;
+	}
+</style>
+<div class="business">
+	<!-- 商家头部标题 -->
+	<div class="businesstitle row">
+		<div class="title1 col-1">商家列表</div>
+	</div>
+	
+	<!-- 商家内容 -->
+	<div class="businesscontent">
+		<!-- 搜索框以及按钮 -->
+		<div class="businessTop row">
+			<!-- 省份搜索框 -->
+			<div class="serach col-1">
+				<form>
+					<select name="" id="serach_province" class="form-control">
+						<option value="" style="display: none;">省</option>
+					</select>
+				</form>
+			</div>
+			<!-- 城市搜索框 -->
+			<div class="serach col-1">
+				<form>
+					<select name="" id="serach_city" class="form-control">
+						<option value="" style="display: none;">城市</option>
+					</select>
+				</form>
+			</div>
+			<!-- 行业搜索框 -->
+			<div class="serach col-1">
+				<form>
+					<select name="" id="serach_industry" class="form-control">
+						<option value="" style="display: none;">行业</option>
+					</select>
+				</form>
+			</div>
+			<!-- 规模搜索框 -->
+			<div class="serach col-1">
+				<form>
+					<select name="" id="serach_scale" class="form-control">
+						<option value="" style="display: none;">规模</option>
+					</select>
+				</form>
+			</div>
+			<div class="btns col-7 text-right">
+				<button class="btn btn-info " id="sjbtn_hy">还原</button>
+			</div>
+			<div class="btns col-1 text-center">
+				<button class="btn btn-warning" id="sjbtn_add">添加</button>
+			</div>
+		</div>
+		<!-- 表单 -->
+		<div class="froms">
+			<table class="table table-bordered text-center">
+				<thead class="table-dark">
+					<tr>
+						<th scope="col" width="100px"><input type="checkbox"></th>
+				       <th scope="col">企业名称</th>
+				       <th scope="col">联系人</th>
+				       <th scope="col">联系方式</th>
+				       <th scope="col">行业</th>
+				       <th scope="col">所在地</th>
+				       <th scope="col">公司规模</th>
+				       <th scope="col">详情</th>
+				       <th scope="col">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+	baseURL = "http://203.195.246.58:7777";
+	// 该id是点击修改按钮时获取的id，设置为全局变量
+	var EditId;
+	function initData(){
+			// 在每次追加数据之前，先清空table
+			$('.table > tbody').empty();
+			var url = "/Business/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="sjbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="sjbtn_del"></a>
+							</td>
+						</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('.table >tbody').append(newTr);
+				})
+			})
+		}
+	// 在点击模态框显示公司规模
+	function addscale(){
+		// 设置公司规模的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据公司规模查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.scale+`">`+item.scale+`</option>
+				`);
+				// 将公司规模追加到模态框的下拉框中
+				$('#input_scale').append(newOption);
+			})
+		});
+	}
+	// 在点击搜索框显示公司规模
+	function serachscale(){
+		// 设置公司规模的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据公司规模查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.scale+`">`+item.scale+`</option>
+				`);
+				// 将公司规模追加到模态框的下拉框中
+				$('#serach_scale').append(newOption);
+			})
+		});
+	}
+	// 在点击模态框显示所在地省份
+	function addprovince(){
+		// 设置所在地的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据所在地查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.province+`">`+item.province+`</option>
+				`);
+				// 将所在地追加到模态框的下拉框中
+				$('#input_province').append(newOption);
+			})
+		});
+	}
+	// 在点击模态框显示所在地省份
+	function serachprovince(){
+		// 设置所在地的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据所在地查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.province+`">`+item.province+`</option>
+				`);
+				// 将所在地追加到模态框的下拉框中
+				$('#serach_province').append(newOption);
+			})
+		});
+	}
+	// 在点击搜索框显示城市
+	function serachcity(){
+		// 设置所在地的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据所在地查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.city+`">`+item.city+`</option>
+				`);
+				// 将所在地追加到模态框的下拉框
+				$('#serach_city').append(newOption);
+			})
+		});
+	}
+	// 在点击搜索框显示行业
+	function serachindustry(){
+		// 设置所在地的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据所在地查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.industry+`">`+item.industry+`</option>
+				`);
+				// 将所在地追加到模态框的下拉框
+				$('#serach_industry').append(newOption);
+			})
+		});
+	}
+	$(function(){
+		//调用初始化数据函数
+		initData();
+		addscale();
+		serachscale();
+		addprovince();
+		serachprovince();
+		serachcity();
+		serachindustry();
+		//================为添加按钮绑定显示模态框事件===========
+		$('#sjbtn_add').on("click",function(){
+			//让id为exampleModal的模态框显示
+			$("#businessModal").modal("show");
+		})
+		// 监听模态框的关闭，清空模态框内容
+		$('#businessModal').on('hidden.bs.modal', function(e){
+		  $(this).find('form')[0].reset();
+		})
+		// =================保存数据以及修改数据===============
+		$("#sjadd").on("click",function(){
+			var name = $('#input_name').val();
+			var contactName = $('#input_sjcontactName').val();
+			var contactPhone = $('#input_sjcontactPhone').val();
+			var industry = $('#input_industry').val();
+			var location = $('#input_location').val();
+			var scale = $('#input_scale').val();
+			if(EditId){
+				//id存在，则修改
+				var data ={
+					id:EditId,
+					name:name,
+					contactName:contactName,
+					contactPhone:contactPhone,
+					industry:industry,
+					location:location,
+					scale:scale
+				}
+				// 将id置为空，否则点击修改后再次点击添加，还是修改
+					EditId = '';
+			}else{
+				//id不存在,即添加
+				var data = {
+					name:name,
+					contactName:contactName,
+					contactPhone:contactPhone,
+					industry:industry,
+					location:location,
+					scale:scale
+				}
+			}
+			var url = "/Business/saveOrUpdate";
+			$.post(baseURL+url,data,function(result){
+				alert(result.message);
+				initData();
+			})
+			//3.关闭模态框，刷新列表
+			$('#businessModal').modal('hide');
+		})
+		// =================查看数据以及修改数据以及删除数据===============
+		$(".table >tbody").on("click","a",function(){
+			switch(this.id){
+				case "sjbtn_del" :{
+					// 获取到id的值
+					var id = $(this).parents('tr').find('td').find('input').val();
+					//与后台进行交互
+					var data = {
+						id:id
+					}
+					var url = "/Business/deleteById";
+					$.post(baseURL+url,data,function(result){
+						alert(result.message);
+					//刷新数据
+						initData();
+					})
+					break;
+				}
+				case "sjbtn_upd" :{
+					// 打开模态框
+				 	$('#businessModal').modal('show');
+					//获取值
+					EditId = $(this).parents('tr').find('td').find('input').val();
+				 	var name = $(this).parents('tr').find('td:nth-child(2)').text();
+				 	var contactName = $(this).parents('tr').find('td:nth-child(3)').text();
+				 	var contactPhone = $(this).parents('tr').find('td:nth-child(4)').text();
+				 	var industry = $(this).parents('tr').find('td:nth-child(5)').text();
+				 	var location = $(this).parents('tr').find('td:nth-child(6)').text();
+				 	var scale = $(this).parents('tr').find('td:nth-child(7)').text();
+				 	$('#input_name').val(name);
+				 	$('#input_sjcontactName').val(contactName);
+				 	$('#input_sjcontactPhone').val(contactPhone);
+				 	$('#input_industry').val(industry);
+				 	$('#input_location').val(location);
+				 	$('#input_scale').val(scale);
+					break;
+				}
+				case "sjbtn_det" :{
+					$('#sjcx').empty();
+					// 打开模态框
+					$("#selectbusinessModal").modal('show');
+					var url = "/Business/findById";
+						// 获取到id的值
+						var id = $(this).parents('tr').find('td').find('input').val();
+						//与后台进行交互
+						var data = {
+							id:id
+					}
+					$.get(baseURL+url,data,function(item){
+						var newTr = $(`
+						            <div class="modal-header">
+						              <h3 class="modal-title" id="exampleModalLabel">`+item.data.name+`</h3> 
+						              	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            				<span aria-hidden="true">&times;</span>
+				          				</button>
+						            </div>
+						            <div class="modal-body">
+						              <form>
+						                <div class="form-group row">
+							                <div class="col-2 text-right">
+							                  <label>行业类型:</label>
+							                </div>
+							                <div class="col-10">`+item.data.industry+`</div>
+						            	</div>
+						            	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>公司规模:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.scale+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>成立时间:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.establishedTime+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>注册资本:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.registeredCapital+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>详细信息:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.description+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>营业执照:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.businessLicense+`</div>
+						                </div>
+						              </form>
+						            </div>
+						            <div class="modal-footer">
+						            </div>
+						       	`);
+						$('#sjcx').append(newTr);
+					})
+				}
+			}
+		})
+		// =============根据省份查询地址信息=================
+		$('#serach_province').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var province = $(this).val();
+			var url = "/Business/findByLocation";
+			var data = {
+				province:province
+			};
+			$.get(baseURL+url,data,function(result){
+				$('.table > tbody').empty();
+				result.data.forEach(function(item){
+					var sjprovincenewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="sjbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="sjbtn_del"></a>
+							</td>
+						</tr>`);
+					$('.table > tbody').append(sjprovincenewSearchTr);
+				});
+			});
+		})
+		// =============根据省份查询地址信息=================
+		$('#serach_city').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var city = $(this).val();
+			var url = "/Business/findByLocation";
+			var data = {
+				city:city
+			};
+			$.get(baseURL+url,data,function(result){
+				$('.table > tbody').empty();
+				result.data.forEach(function(item){
+					var sjcitynewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="sjbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="sjbtn_del"></a>
+							</td>
+						</tr>`);
+					$('.table > tbody').append(sjcitynewSearchTr);
+				});
+			});
+		})
+		// =============根据行业查询地址信息=================
+		$('#serach_industry').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var industry = $(this).val();
+			var url = "/Business/findByIndustry";
+			var data = {
+				industry:industry
+			};
+			$.get(baseURL+url,data,function(result){
+				$('.table > tbody').empty();
+				result.data.forEach(function(item){
+					var sjindustrynewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="sjbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="sjbtn_del"></a>
+							</td>
+						</tr>`);
+					$('.table > tbody').append(sjindustrynewSearchTr);
+				});
+			});
+		})
+		// =============根据规模查询地址信息=================
+		$('#serach_scale').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var scale = $(this).val();
+			var url = "/Business/findByScale";
+			var data = {
+				scale:scale
+			};
+			$.get(baseURL+url,data,function(result){
+				$('.table > tbody').empty();
+				result.data.forEach(function(item){
+					var sjscalenewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="sjbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="sjbtn_del"></a>
+							</td>
+						</tr>`);
+					$('.table > tbody').append(sjscalenewSearchTr);
+				});
+			});
+		})
+		// 还原搜索
+		$('#sjbtn_hy').click(function(){
+			// 点击按钮重新加载数据
+			initData();
+
+		});
+	})
+</script>

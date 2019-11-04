@@ -1,0 +1,555 @@
+<!-- 导入jQuery库 -->
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+<!-- 导入bootstrapo.css库 -->
+	<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- 导入bootstrapo.js库 -->
+	<!-- <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<!-- 导入iconfont图标库 -->
+	<!-- <link rel="stylesheet" href="https://at.alicdn.com/t/font_1424659_vhrtzwcq2vp.css"> -->
+<style>
+	.audit >div{
+		margin: 0 30px;
+	}
+	.tab-content{
+		background-color: #ffffff;
+	}
+	.sjshTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.zpshTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.table > thead{
+		background-color: #333;
+		color: #ffffff;
+	}
+	a{
+		cursor: pointer;
+	}
+	.nav a:nth-child(1),
+	.nav a:nth-child(2){
+		border-top: 5px solid blue;
+	}
+
+</style>
+<div class="audit">
+	<!-- 招聘头部标题 -->
+	<nav>
+  		<div class="nav nav-tabs" id="nav-tab" role="tablist" style="margin:0 30px;">
+    		<a class="nav-item nav-link active" id="nav-syaudit-tab" data-toggle="tab" href="#nav-syaudit" role="tab" aria-controls="nav-syaudit" aria-selected="true" sty>商业审核</a>
+    		<a class="nav-item nav-link" id="nav-zpaudit-tab" data-toggle="tab" href="#nav-zpaudit" role="tab" aria-controls="nav-zpaudit" aria-selected="false">招聘审核</a>
+  		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">	
+		<div class="tab-pane fade show active" id="nav-syaudit" role="tabpanel" aria-labelledby="nav-syaudit-tab">
+			<!-- 头部查找框 -->
+			<div class="sjshTop row">
+				<!-- 行业搜索框 -->
+				<div class="serach col-1">
+					<form>
+						<select name="" id="serach_sjshindustry" class="form-control">
+							<option value="" style="display: none;">行业</option>
+						</select>
+					</form>
+				</div>
+				<!-- 规模搜索框 -->
+				<div class="serach col-1">
+					<form>
+						<select name="" id="serach_sjshscale" class="form-control">
+							<option value="" style="display: none;">规模</option>
+						</select>
+					</form>
+				</div>
+				<div class="btns col-9 text-right">
+					<button class="btn btn-info " id="sjshbtn_hy">还原</button>
+				</div>
+				<div class="btns col-1	 text-center">
+					<button class="btn btn-danger " id="sjshbtn_allxuan">全选</button>
+				</div>
+			</div>	
+			<!-- 商家审核表单 -->
+			<div class="froms">
+				<table class="table table-bordered text-center" id="sjsh">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" width="100px"><input type="checkbox"></th>
+					       <th scope="col">企业名称</th>
+					       <th scope="col">联系人</th>
+					       <th scope="col">联系方式</th>
+					       <th scope="col">行业</th>
+					       <th scope="col">所在地</th>
+					       <th scope="col">公司规模</th>
+					       <th scope="col">详情</th>
+					       <th scope="col">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="nav-zpaudit" role="tabpanel" aria-labelledby="nav-zpaudit-tab">
+			<div class="zpshTop row">
+				<!-- 职业类型搜索框 -->
+				<div class="serach col-2 text-canter">
+					<form>
+						<select name="" id="serach_zpshjob" class="form-control">
+							<option value="" style="display: none;">职业类型</option>
+						</select>
+					</form>
+				</div>
+				<div class="btns col-10 text-right">
+					<button class="btn btn-info " id="zpshbtn_hy">还原</button>
+				</div>
+			</div>
+			<!-- 招聘审核表单 -->
+			<div class="froms">					
+				<table class="table table-bordered text-center" id="zpsh">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" width="100px"><input type="checkbox"></th>
+					       <th scope="col">招聘标题</th>
+					       <th scope="col">发布人</th>
+					       <th scope="col">联系方式</th>
+					       <th scope="col">职位</th>
+					       <th scope="col">发布时间</th>
+					       <th scope="col">详情</th>
+					       <th scope="col">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	baseURL = "http://203.195.246.58:7777";
+	// 该id是点击修改按钮时获取的id，设置为全局变量
+	var EditId;
+	function initData1(){
+			// 在每次追加数据之前，先清空table
+			$('#sjsh > tbody').empty();
+			var url = "/Business/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr1 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjshbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-tongguo" id="sjshbtn_ps"></a>
+								<a class="iconfont icon-butongguo" id="sjshbtn_dis"></a>
+							</td>
+						</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#sjsh > tbody').append(newTr1);
+				})
+			})	
+		}
+	function initData2(){
+			// 在每次追加数据之前，先清空table
+			$('#zpsh > tbody').empty();
+			var url = "/Employment/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpshbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-tongguo" id="zpshbtn_ps"></a>
+								<a class="iconfont icon-butongguo" id="zpshbtn_dis"></a>
+							</td>
+						</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#zpsh > tbody').append(newTr2);
+				})
+			})	
+		}
+	// 在点击搜索框显示行业
+	function serachsjshindustry(){
+		// 设置所在地的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据所在地查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.industry+`">`+item.industry+`</option>
+				`);
+				// 将所在地追加到模态框的下拉框
+				$('#serach_sjshindustry').append(newOption);
+			})
+		});
+	}	
+	// 在点击搜索框显示公司规模
+	function serachsjshscale(){
+		// 设置公司规模的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据公司规模查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.scale+`">`+item.scale+`</option>
+				`);
+				// 将公司规模追加到模态框的下拉框中
+				$('#serach_sjshscale').append(newOption);
+			})
+		});
+	}
+	// 在点击搜索框显示职务
+	function serachzpshjob(){
+		var url ='/Employment/findAll';
+		$.get(baseURL+url,function(result){
+			result.data.forEach(function(item){
+				var newOption = $(`
+					<option value="`+item.job+`">`+item.job+`</option>
+				`);
+				$('#serach_zpshjob').append(newOption);
+			})
+		});
+	}
+	//为全选按钮绑定事件
+		var a =0;
+		$("#sjshbtn_allxuan").on("click",function(){ 
+			a++;
+			console.log(a)
+			var allid = $("input[type=checkbox]").map(function(index,item){
+				console.log(item)
+				if(a%2!=0){
+					for(var i=0;i<=index;i++){
+						item.checked = true;
+					}
+				}else{
+					for (var i=0;i<=index;i++){
+						item. checked = false;
+					}
+				}
+			})
+		})
+	$(function(){
+		//调用初始化数据函数
+		initData1();
+		initData2();
+		serachsjshindustry();
+		serachsjshscale();
+		serachzpshjob();
+		// =================商家审核(查看数据以及通过数据以及不通过数据)===============
+		$("#sjsh >tbody").on("click","a",function(){
+			switch(this.id){
+				case "sjshbtn_dis" :{
+					// 获取到id的值
+					var id = $(this).parents('tr').find('td').find('input').val();
+					//与后台进行交互
+					var data = {
+						id:id
+					}
+					var url = "/Business/deleteById";
+					$.post(baseURL+url,data,function(result){
+						alert(result.message);
+					//刷新数据
+						initData1();
+					})
+					break;
+				}
+				case "sjshbtn_ps" :{
+					
+				 	
+				}
+				case "sjshbtn_det" :{
+					$('#sjshcx').empty();
+					// 打开模态框
+					$("#selectsjshModal").modal('show');
+					var url = "/Business/findById";
+						// 获取到id的值
+						var id = $(this).parents('tr').find('td').find('input').val();
+						//与后台进行交互
+						var data = {
+							id:id
+					}
+					$.get(baseURL+url,data,function(item){
+							var newTr = $(`
+							 	 <div class="modal-header">
+						              <h3 class="modal-title" id="exampleModalLabel">`+item.data.name+`</h3> 
+						              	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            				<span aria-hidden="true">&times;</span>
+				          				</button>
+						            </div>
+						            <div class="modal-body">
+						              <form>
+						                <div class="form-group row">
+							                <div class="col-2 text-right">
+							                  <label>行业类型:</label>
+							                </div>
+							                <div class="col-10">`+item.data.industry+`</div>
+						            	</div>
+						            	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>公司规模:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.scale+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>成立时间:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.establishedTime+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>注册资本:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.registeredCapital+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>详细信息:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.description+`</div>
+						              	</div>
+						              	<div class="form-group row">
+						                	<div class="col-2 text-right">
+						                  		<label>营业执照:</label>
+						                	</div>
+						                  	 <div class="col-10">`+item.data.businessLicense+`</div>
+						                </div>
+						              </form>
+						            </div>
+						            <div class="modal-footer">
+						            </div>
+							    </div>`);
+							$('#sjshcx').append(newTr);
+						})
+				}
+			}
+		})
+		// =================招聘审核(查看数据以及通过数据以及不通过数据)===============
+		$("#zpsh >tbody").on("click","a",function(){
+			switch(this.id){
+				case "zpshbtn_dis" :{
+					// 获取到id的值
+					var id = $(this).parents('tr').find('td').find('input').val();
+					//与后台进行交互
+					var data = {
+						id:id
+					}
+					var url = "/Employment/deleteById";
+					$.post(baseURL+url,data,function(result){
+						alert(result.message);
+					//刷新数据
+						initData2();
+					})
+					break;
+				}
+				case "zpshbtn_det" :{
+					$('#zpshcx').empty();
+					// 打开模态框
+					$("#selectzpshModal").modal('show');
+					var url = "/Employment/findById";
+						// 获取到id的值
+						var id = $(this).parents('tr').find('td').find('input').val();
+						//与后台进行交互
+						var data = {
+							id:id
+					}
+					$.get(baseURL+url,data,function(item){
+							var newTr = $(`
+							 	<!-- 弹框头部 -->
+							            <div class="modal-header">
+							              <h3 class="modal-title" id="exampleModalLabel">`+item.data.title+`</h3> 
+							              	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                								<span aria-hidden="true">&times;</span>
+              								</button>
+							            </div>
+							            <div class="modal-body">
+							              <form>
+							                <div class="form-group row">
+								                <div class="col-2 text-right">
+								                  <label>工资:</label>
+								                </div>
+								                <div class="col-10">`+item.data.salary+`</div>
+							            	</div>
+							            	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>招聘人数:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.num+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作职务:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.job+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作时间:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.workingHours+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>福利:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.welfare+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label><a class="iconfont icon-xiazai18"></a></label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.province+`-`+item.data.city+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>详细信息:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.description+`</div>
+							              	</div>
+							              </form>
+							            </div>
+							            <div class="modal-footer">
+							            </div>
+							    `);
+							$('#zpshcx').append(newTr);
+						})
+				}
+			}
+		})
+		// =============根据行业查询地址信息=================
+		$('#serach_sjshindustry').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var industry = $(this).val();
+			var url = "/Business/findByIndustry";
+			var data = {
+				industry:industry
+			};
+			$.get(baseURL+url,data,function(result){
+				$('#sjsh > tbody').empty();
+				result.data.forEach(function(item){
+					var sjindustrynewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjshbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-tongguo" id="sjshbtn_ps"></a>
+								<a class="iconfont icon-butongguo" id="sjshbtn_dis"></a>
+							</td>
+						</tr>`);
+					$('#sjsh > tbody').append(sjindustrynewSearchTr);
+				});
+			});
+		})
+		// =============根据查询地址信息=================
+		$('#serach_sjshscale').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var scale = $(this).val();
+			var url = "/Business/findByScale";
+			var data = {
+				scale:scale
+			};
+			$.get(baseURL+url,data,function(result){
+				$('#sjsh > tbody').empty();
+				result.data.forEach(function(item){
+					var sjscalenewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.name+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.industry+`</td>
+					        <td>`+item.location+`</td>
+					        <td>`+item.scale+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="sjshbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-tongguo" id="sjshbtn_ps"></a>
+								<a class="iconfont icon-butongguo" id="sjshbtn_dis"></a>
+							</td>
+						</tr>`);
+					$('#sjsh > tbody').append(sjscalenewSearchTr);
+				});
+			});
+		})
+		// =============根据职业查询地址信息=================
+		$('#serach_zpshjob').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var job = $(this).val();
+			var url = "/Employment/findByJob";
+			var data = {
+				job:job
+			};
+			$.get(baseURL+url,data,function(result){
+				result.data.forEach(function(item){
+					var jobnewSearchTr = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpshbtn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-tongguo" id="zpshbtn_ps"></a>
+								<a class="iconfont icon-butongguo" id="zpshbtn_dis"></a>
+							</td>
+						</tr>`);
+					
+					$('#zpsh> tbody').append(jobnewSearchTr);
+				})
+			});		
+		})
+		// 还原搜索
+		$('#sjshbtn_hy').click(function(){
+			// 点击按钮重新加载数据
+			initData1();
+
+		});
+		// 还原搜索
+		$('#zpshbtn_hy').click(function(){
+			// 点击按钮重新加载数据
+			initData2();
+
+		});
+	})
+</script>
+

@@ -1,0 +1,584 @@
+<!-- 导入jQuery库 -->
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+<!-- 导入bootstrapo.css库 -->
+	<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
+<!-- 导入bootstrapo.js库 -->
+	<!-- <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<!-- 导入iconfont图标库 -->
+	<!-- <link rel="stylesheet" href="https://at.alicdn.com/t/font_1424659_vhrtzwcq2vp.css"> -->
+<style>
+	.employment >div{
+		margin: 0 30px;
+	}
+	.tab-content{
+		background-color: #ffffff;
+	}
+	.employmenttitle{
+		background-color:  #F1F1F1;
+	}
+	.employmentTop {
+		padding-top: 10px;
+		margin-bottom: 10px;
+	}
+	.table > thead{
+		background-color: #333;
+		color: #ffffff;
+	}
+	a{
+		cursor: pointer;
+	}
+	.nav a:nth-child(1),
+	.nav a:nth-child(2){
+		border-top: 5px solid blue;
+	}
+</style>
+<div class="employment">
+	<!-- 招聘头部标题 -->
+	<nav>
+  		<div class="nav nav-tabs" id="nav-tab" role="tablist" style="margin:0 30px;">
+    		<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-employment1" role="tab" aria-controls="nav-home" aria-selected="true" sty>招聘中</a>
+    		<a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-employment2" role="tab" aria-controls="nav-profile" aria-selected="false">招聘完结</a>
+  		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<!-- 头部查找框 -->
+		<div class="employmentTop row">
+			<!-- 职业类型搜索框 -->
+			<div class="serach col-2 text-canter">
+				<form>
+					<select name="" id="serach_job" class="form-control">
+						<option value="" style="display: none;">职业类型</option>
+					</select>
+				</form>
+			</div>
+			<div class="serach col-1 text-canter">
+				<form>
+					<select name="" id="serach_id" class="form-control">
+						<option value="" style="display: none;">id</option>
+					</select>
+				</form>
+			</div>
+			<div class="btns col-7 text-right">
+				<button class="btn btn-info " id="zpbtn_hy">还原</button>
+			</div>
+			<div class="btns col-1 text-center">
+				<button class="btn btn-danger " id="zpbtn_allxuan">全选</button>
+			</div>
+			<div class="btns col-1 text-center">
+				<button class="btn btn-warning" id="zpbtn_add">发布招聘</button>
+			</div>
+		</div>
+		<div class="tab-pane fade show active" id="nav-employment1" role="tabpanel" aria-labelledby="nav-home-tab">	
+			<!-- 招聘中表单 -->
+			<div class="froms">
+				<table class="table table-bordered text-center" id="zpz">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" width="100px"><input type="checkbox"></th>
+					       <th scope="col">招聘标题</th>
+					       <th scope="col">发布人</th>
+					       <th scope="col">联系方式</th>
+					       <th scope="col">职位</th>
+					       <th scope="col">发布时间</th>
+					       <th scope="col">详情</th>
+					       <th scope="col">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="nav-employment2" role="tabpanel" aria-labelledby="nav-profile-tab">
+			<!-- 招聘完结表单 -->
+			<div class="froms">					
+				<table class="table table-bordered text-center" id="zpwj">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" width="100px"><input type="checkbox"></th>
+					       <th scope="col">招聘标题</th>
+					       <th scope="col">发布人</th>
+					       <th scope="col">联系方式</th>
+					       <th scope="col">职位</th>
+					       <th scope="col">发布时间</th>
+					       <th scope="col">详情</th>
+					       <th scope="col">状态</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	baseURL = "http://203.195.246.58:7777";
+	// 该id是点击修改按钮时获取的id，设置为全局变量
+	var EditId;
+	function initData(){
+			// 在每次追加数据之前，先清空table
+			$('#zpz > tbody').empty();
+			$('#zpwj > tbody').empty();
+			var url = "/Employment/findAll";
+			$.get(baseURL+url,function(result){
+				result.data.forEach(function(item){
+					var newTr1 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpbtn_det1"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="zpbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="zpbtn_del"></a>
+							</td>
+						</tr>`);
+					var newTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpbtn_det2"></a>
+					        </td>							
+							<td>`+item.status+`</td>
+						</tr>`);
+					//获取到的后台数据显示在tbody上
+					$('#zpz > tbody').append(newTr1);
+					$('#zpwj > tbody').append(newTr2);
+				})
+			})	
+		}
+	// 在点击模态框显示职务
+	function addjob(){
+		var url ='/Employment/findAll';
+		$.get(baseURL+url,function(result){
+			result.data.forEach(function(item){
+				var newOption = $(`
+					<option value="`+item.job+`">`+item.job+`</option>
+				`);
+				$('#input_job').append(newOption);
+			})
+		});
+	}
+	// 在点击搜索框显示职务
+	function serachjob(){
+		var url ='/Employment/findAll';
+		$.get(baseURL+url,function(result){
+			result.data.forEach(function(item){
+				var newOption = $(`
+					<option value="`+item.job+`">`+item.job+`</option>
+				`);
+				$('#serach_job').append(newOption);
+			})
+		});
+	}
+	// 在点击模态框显示
+	function addname(){
+		// 设置公司名称的findAll请求地址
+		var url ='/Business/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(qwitem){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据公司规模查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.name+`">`+item.name+`</option>
+				`);
+				// 将公司规模追加到模态框的下拉框中
+				$('#input_sjname').append(newOption);
+			})
+		});
+	}
+	function serachid(){
+		// 设置id的findAll请求地址
+		var url ='/Employment/findAll';
+		$.get(baseURL+url,function(result){
+			// 将结果遍历，拿到id
+			result.data.forEach(function(item){
+				// 新创建节点，并追加到select中
+				/*
+				*第一个item.id放在value中，是为了根据公司规模查询的时候可以获取到此option的值
+				*第二个item.id放在option中间是为了显示
+				*/
+				var newOption = $(`
+					<option value="`+item.id+`">`+item.id+`</option>
+				`);
+				// 将公司规模追加到模态框的下拉框中
+				$('#serach_id').append(newOption);
+			})
+		});
+	}
+	//为全选按钮绑定事件
+		var a =0;
+		$("#zpbtn_allxuan").on("click",function(){ 
+			a++;
+			console.log(a)
+			var allid = $("input[type=checkbox]").map(function(index,item){
+				console.log(item)
+				if(a%2!=0){
+					for(var i=0;i<=index;i++){
+						item.checked = true;
+					}
+				}else{
+					for (var i=0;i<=index;i++){
+						item. checked = false;
+					}
+				}
+			})
+		})
+	$(function(){
+		//调用初始化数据函数
+		initData();
+		addjob();
+		addname();
+		serachjob();
+		serachid();	
+		//================为添加按钮绑定显示模态框事件===========
+		$('#zpbtn_add').on("click",function(){
+			//让id为exampleModal的模态框显示
+			$("#addemploymentModal").modal("show");
+		})
+		// 监听模态框的关闭，清空模态框内容
+		$('#addemploymentModal').on('hidden.bs.modal', function(e){
+		  $(this).find('form')[0].reset();
+		})
+		
+		// =================保存数据以及修改数据===============
+		$("#zpadd").on("click",function(){
+			var title = $('#input_title').val();
+			var contactName = $('#input_zpcontactName').val();
+			var contactPhone = $('#input_zpcontactPhone').val();
+			var job = $('#input_job').val();
+			var publishTime = $('#input_publishTime').val();
+			if(EditId){
+				//id存在，则修改
+				var data ={
+					id:EditId,
+					title:title,
+					contactName:contactName,
+					contactPhone:contactPhone,
+					job:job,
+					publishTime:publishTime
+				}
+				// 将id置为空，否则点击修改后再次点击添加，还是修改
+					EditId = '';
+			}else{
+				//id不存在,即添加
+				var data = {
+					title:title,
+					contactName:contactName,
+					contactPhone:contactPhone,
+					job:job,
+					publishTime:publishTime
+				}
+			}
+			var url = "/Employment/saveOrUpdate";
+			$.post(baseURL+url,data,function(result){
+				alert(result.message);
+				initData();
+			})
+			//3.关闭模态框，刷新列表
+			$('#addemploymentModal').modal('hide');
+		})
+		// =================招聘中(查看数据以及修改数据以及删除数据)===============
+		$("#zpz >tbody").on("click","a",function(){
+			switch(this.id){
+				case "zpbtn_del" :{
+					// 获取到id的值
+					var id = $(this).parents('tr').find('td').find('input').val();
+					//与后台进行交互
+					var data = {
+						id:id
+					}
+					var url = "/Employment/deleteById";
+					$.post(baseURL+url,data,function(result){
+						alert(result.message);
+					//刷新数据
+						initData();
+					})
+					break;
+				}
+				case "zpbtn_upd" :{
+					// 打开模态框
+				 	$('#addemploymentModal').modal('show');
+					//获取值
+					EditId = $(this).parents('tr').find('td').find('input').val();
+				 	var title = $(this).parents('tr').find('td:nth-child(2)').text();
+				 	var contactName = $(this).parents('tr').find('td:nth-child(3)').text();
+				 	var contactPhone = $(this).parents('tr').find('td:nth-child(4)').text();
+				 	var job = $(this).parents('tr').find('td:nth-child(5)').text();
+				 	var publishTime = $(this).parents('tr').find('td:nth-child(6)').text();
+				 	var salary = $(this).parents('tr').find('td:nth-child(7)').text();
+				 	var num = $(this).parents('tr').find('td:nth-child(8)').text();
+				 	var description = $(this).parents('tr').find('td:nth-child(9)').text();
+				 	$('#input_title').val(title);
+				 	$('#input_zpcontactName').val(contactName);
+				 	$('#input_zpcontactPhone').val(contactPhone);
+				 	$('#input_job').val(job);
+				 	$('#input_publishTime').val(publishTime);
+				 	$('#input_salary').val(salary);
+				 	$('#input_num').val(num);
+				 	$('#text_description').val(description);
+					break;
+				}
+				case "zpbtn_det1" :{
+					$('#zpcx').empty();
+					// 打开模态框
+					$("#selectemploymentModal").modal('show');
+					var url = "/Employment/findById";
+						// 获取到id的值
+						var id = $(this).parents('tr').find('td').find('input').val();
+						//与后台进行交互
+						var data = {
+							id:id
+					}
+					$.get(baseURL+url,data,function(item){
+							var newTr = $(`
+							          	<!-- 弹框头部 -->
+							            <div class="modal-header">
+							              <h3 class="modal-title" id="exampleModalLabel">`+item.data.title+`</h3> 
+							              	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                								<span aria-hidden="true">&times;</span>
+              								</button>
+							            </div>
+							            <div class="modal-body">
+							              <form>
+							                <div class="form-group row">
+								                <div class="col-2 text-right">
+								                  <label>工资:</label>
+								                </div>
+								                <div class="col-10">`+item.data.salary+`</div>
+							            	</div>
+							            	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>招聘人数:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.num+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作职务:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.job+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作时间:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.workingHours+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>福利:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.welfare+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label><a class="iconfont icon-xiazai18"></a></label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.province+`-`+item.data.city+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>详细信息:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.description+`</div>
+							              	</div>
+							              </form>
+							            </div>
+							            <div class="modal-footer">
+							            </div>
+							        `);
+							$('#zpcx').append(newTr);
+						})
+				}
+			}
+		})
+		// =================招聘完结(查看数据以及修改数据以及删除数据)===============
+		$("#zpwj >tbody").on("click","a",function(){
+			switch(this.id){
+				case "zpbtn_det2" :{
+					$('#zpcx').empty();
+					// 打开模态框
+					$("#selectemploymentModal").modal('show');
+					var url = "/Employment/findById";
+						// 获取到id的值
+						var id = $(this).parents('tr').find('td').find('input').val();
+						//与后台进行交互
+						var data = {
+							id:id
+					}
+					$.get(baseURL+url,data,function(item){
+							var newTr = $(`
+							          	<!-- 弹框头部 -->
+							            <div class="modal-header">
+							              <h3 class="modal-title" id="exampleModalLabel">`+item.data.title+`</h3> 
+							              	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                								<span aria-hidden="true">&times;</span>
+              								</button>
+							            </div>
+							            <div class="modal-body">
+							              <form>
+							                <div class="form-group row">
+								                <div class="col-2 text-right">
+								                  <label>工资:</label>
+								                </div>
+								                <div class="col-10">`+item.data.salary+`</div>
+							            	</div>
+							            	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>招聘人数:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.num+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作职务:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.job+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							            		<div class="col-2 text-right">
+								                  <label>工作时间:</label>
+								                </div>
+							                	<div class="col-10">`+item.data.workingHours+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>福利:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.welfare+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label><a class="iconfont icon-xiazai18"></a></label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.province+`-`+item.data.city+`</div>
+							              	</div>
+							              	<div class="form-group row">
+							                	<div class="col-2 text-right">
+							                  		<label>详细信息:</label>
+							                	</div>
+							                  	 <div class="col-10">`+item.data.description+`</div>
+							              	</div>
+							              </form>
+							            </div>
+							            <div class="modal-footer">
+							            </div>
+							       	`);
+							$('#zpcx').append(newTr);
+						})
+				}
+			}
+		})
+		// =============根据职业查询地址信息=================
+		$('#serach_job').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var job = $(this).val();
+			var url = "/Employment/findByJob";
+			var data = {
+				job:job
+			};
+			$('#zpz> tbody').empty();
+			$('#zpwj> tbody').empty();
+			$.get(baseURL+url,data,function(result){
+				result.data.forEach(function(item){
+					var jobnewSearchTr1 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpbtn_det1"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="zpbtn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="zpbtn_del"></a>
+							</td>
+						</tr>`);
+					var jobnewSearchTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.id+`"/></td>
+							<td>`+item.title+`</td>
+					        <td>`+item.contactName+`</td>
+					        <td>`+item.contactPhone+`</td>
+					        <td>`+item.job+`</td>
+					        <td>`+item.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="zpbtn_det2"></a>
+					        </td>
+							<td>`+item.status+`</td>
+						</tr>`);	
+					$('#zpz> tbody').append(jobnewSearchTr1);
+					$('#zpwj> tbody').append(jobnewSearchTr2);	
+				})
+			});		
+		})
+		// =============根据id查询招聘信息=================
+		$('#serach_id').on('click','option',function(){
+			// console.log($(this).val());
+			// 将当前点击的option的值赋值给id
+			var id = $(this).val();
+			var url = "/Employment/findById";
+			var data = {
+				id:id
+			};
+			$.get(baseURL+url,data,function(item){
+				$('#zpz > tbody').empty();
+				$('#zpwj > tbody').empty();
+				var zpidnewSearchTr1 = $(`<tr>
+							<td><input type="checkbox" value="`+item.data.id+`"/></td>
+							<td>`+item.data.title+`</td>
+					        <td>`+item.data.contactName+`</td>
+					        <td>`+item.data.contactPhone+`</td>
+					        <td>`+item.data.job+`</td>
+					        <td>`+item.data.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="btn_det"></a>
+					        </td>
+							<td>
+								<a class="iconfont icon-xiugai" id="btn_upd"></a>
+								<a class="iconfont icon-iconfontshanchu1" id="btn_del"></a>
+							</td>
+						</tr>`);
+				var zpidnewSearchTr2 = $(`<tr>
+							<td><input type="checkbox" value="`+item.data.id+`"/></td>
+							<td>`+item.data.title+`</td>
+					        <td>`+item.data.contactName+`</td>
+					        <td>`+item.data.contactPhone+`</td>
+					        <td>`+item.data.job+`</td>
+					        <td>`+item.data.publishTime+`</td>
+					        <td>
+					        	<a class="iconfont icon-chakan" id="btn_det"></a>
+					        </td>
+							<td>`+item.status+`</td>
+						</tr>`);		
+					$('#zpz > tbody').append(zpidnewSearchTr1);
+					$('#zpwj > tbody').append(zpidnewSearchTr2);
+			})
+		});
+		// 还原搜索
+		$('#zpbtn_hy').click(function(){
+			// 点击按钮重新加载数据
+			initData();
+
+		});
+	})
+</script>
+
